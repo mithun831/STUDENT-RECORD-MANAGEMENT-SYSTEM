@@ -1,0 +1,165 @@
+#include <stdio.h>
+#include <string.h>
+
+#define MAX 100
+
+typedef struct {
+    int roll_no;
+    char name[50];
+    float marks;
+} Student;
+
+Student students[MAX];
+int count = 0;
+
+// Insert a new student
+void insert_student(int roll_no, char name[], float marks) {
+    for (int i = 0; i < count; i++) {
+        if (students[i].roll_no == roll_no) {
+            printf("Roll No %d already exists.\n", roll_no);
+            return;
+        }
+    }
+    if (count < MAX) {
+        students[count].roll_no = roll_no;
+        strcpy(students[count].name, name);
+        students[count].marks = marks;
+        count++;
+        printf("Student %s added.\n", name);
+    } else {
+        printf("Student list full.\n");
+    }
+}
+
+// Display all students
+void display_students() {
+    if (count == 0) {
+        printf("No students available.\n");
+        return;
+    }
+    printf("\nStudent Records:\n");
+    for (int i = 0; i < count; i++) {
+        printf("Roll No: %d, Name: %s, Marks: %.2f\n", students[i].roll_no, students[i].name, students[i].marks);
+    }
+}
+
+// Linear search by roll number
+int linear_search(int roll_no) {
+    for (int i = 0; i < count; i++) {
+        if (students[i].roll_no == roll_no) {
+            return i;
+        }
+    }
+    return -1;
+}
+
+// Selection sort by roll number
+void selection_sort() {
+    for (int i = 0; i < count - 1; i++) {
+        int min_idx = i;
+        for (int j = i + 1; j < count; j++) {
+            if (students[j].roll_no < students[min_idx].roll_no) {
+                min_idx = j;
+            }
+        }
+        Student temp = students[min_idx];
+        students[min_idx] = students[i];
+        students[i] = temp;
+    }
+}
+
+// Binary search by roll number (array must be sorted)
+int binary_search(int roll_no) {
+    int low = 0, high = count - 1;
+    while (low <= high) {
+        int mid = (low + high) / 2;
+        if (students[mid].roll_no == roll_no) {
+            return mid;
+        } else if (students[mid].roll_no < roll_no) {
+            low = mid + 1;
+        } else {
+            high = mid - 1;
+        }
+    }
+    return -1;
+}
+
+// Bubble sort by marks
+void bubble_sort_marks() {
+    for (int i = 0; i < count - 1; i++) {
+        for (int j = 0; j < count - i - 1; j++) {
+            if (students[j].marks > students[j + 1].marks) {
+                Student temp = students[j];
+                students[j] = students[j + 1];
+                students[j + 1] = temp;
+            }
+        }
+    }
+}
+
+int main() {
+    int choice;
+    while (1) {
+        printf("\nStudent Record Management System\n");
+        printf("1. Insert Student\n2. Display Students\n3. Linear Search by Roll No\n");
+        printf("4. Sort by Roll No (Selection Sort)\n5. Binary Search by Roll No\n6. Sort by Marks (Bubble Sort)\n7. Exit\n");
+        printf("Enter choice: ");
+        scanf("%d", &choice);
+
+        if (choice == 1) {
+            int roll_no;
+            char name[50];
+            float marks;
+            printf("Enter Roll No: ");
+            scanf("%d", &roll_no);
+            printf("Enter Name: ");
+            scanf(" %[^\n]", name);
+            printf("Enter Marks: ");
+            scanf("%f", &marks);
+            insert_student(roll_no, name, marks);
+        }
+        else if (choice == 2) {
+            display_students();
+        }
+        else if (choice == 3) {
+            int roll_no, idx;
+            printf("Enter Roll No to search: ");
+            scanf("%d", &roll_no);
+            idx = linear_search(roll_no);
+            if (idx != -1) {
+                printf("Found: Roll No: %d, Name: %s, Marks: %.2f\n", students[idx].roll_no, students[idx].name, students[idx].marks);
+            } else {
+                printf("Student not found.\n");
+            }
+        }
+        else if (choice == 4) {
+            selection_sort();
+            printf("Sorted by Roll No.\n");
+        }
+        else if (choice == 5) {
+            int roll_no, idx;
+            selection_sort(); // make sure array is sorted before binary search
+            printf("Enter Roll No to search: ");
+            scanf("%d", &roll_no);
+            idx = binary_search(roll_no);
+            if (idx != -1) {
+                printf("Found: Roll No: %d, Name: %s, Marks: %.2f\n", students[idx].roll_no, students[idx].name, students[idx].marks);
+            } else {
+                printf("Student not found.\n");
+            }
+        }
+        else if (choice == 6) {
+            bubble_sort_marks();
+            printf("Sorted by Marks.\n");
+        }
+        else if (choice == 7) {
+            printf("Exiting program.\n");
+            break;
+        }
+        else {
+            printf("Invalid choice. Try again.\n");
+        }
+    }
+
+    return 0;
+}
